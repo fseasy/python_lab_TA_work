@@ -29,6 +29,20 @@
     如此一来，Python的门槛还是比较高的。想要优化不易啊。
 
     其实，我仍然不懂，为何Python的Fast实现如此之慢？
+    
+    **UPDATE -- 知道为何Fast跑这么慢的原因了**
+
+    梓翔帮忙找到了原因：
+
+    在内层循环，筛去相关合数时，我们使用了`for prime_num_idx in range(0,prime_nums_cnt)  ` 这个是在外层每次循环都要执行的语句！在后面素数找得越来越多的情况下，每次的开销变得越来越大！这个range就相当于一个for循环，开辟了一个prime_nums_cnt大小的数组，有了时间、空间的双重开销，而且空间开销也带来时间的开销！我们知道内存的申请与释放都是比较费时的，外层每个循环都要申请大量内存，同时,内层循环其实也真的跑不了几个就会推出。所以频繁申请释放内存，时间开销也很大。
+
+    ！！使用while+变量或者使用xrange，速度一下就快了！
+    
+    |Language| Result |time detail|
+    |Python + Fast + xrange | 142,913,828,922 | real    0m1.728s user    0m1.640s sys     0m0.084s|
+    |Python + Fast + while  | 142,913,828,922 | real    0m1.377s user    0m0.916s sys     0m0.456s |
+
+    如上，果然用while是开销更小的！不过总的来说，比起Normal模式，还是梢慢了一点，不过几乎可以认为是一致的（real time）。而且注意到Fast的Sys time开销是远大于Normal的，而且也是大于xrange的，这或许是说while的循环使用了系统调用？ - - ， 真是不明白啊...
 
 
 2. 怎么计算两个日期间经过的天数

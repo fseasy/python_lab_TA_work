@@ -13,11 +13,13 @@ def generate_prime_number(up_bound) :
     prime_nums = []
     prime_nums_cnt = 0
     logging.debug("start generate all prime numbers in range [2 , {:,}) with mode fast".format(up_bound))
-    for num in xrange(2 , up_bound) :
+    for num in range(2 , up_bound) :
         if candidate_nums_is_prime[num] : 
             prime_nums.append(num)
             prime_nums_cnt += 1
-        for prime_num_idx in range(0,prime_nums_cnt) :
+        prime_num_idx = 0
+        while prime_num_idx < prime_nums_cnt :
+        #for prime_num_idx in xrange(0,prime_nums_cnt) :
             cur_prime_num = prime_nums[prime_num_idx]
             to_be_filtered_num_idx = num * cur_prime_num
             if to_be_filtered_num_idx >= up_bound : 
@@ -25,8 +27,9 @@ def generate_prime_number(up_bound) :
             candidate_nums_is_prime[to_be_filtered_num_idx] = False
             if num % cur_prime_num == 0 :
                 break
-        if num % 100000 == 0 :
-            logging.debug('processing number [{:,} ,{:,} )done'.format(num - 100000 , num))
+            prime_num_idx += 1
+        #if num % 100000 == 0 :
+        #    logging.debug('processing number [{:,} ,{:,} )done'.format(num - 100000 , num))
     return prime_nums
 
 ## normal-linear-generate-prime-number algorithm
