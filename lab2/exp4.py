@@ -12,7 +12,7 @@ def get_num_bits(num) :
     tmp_num = num
     while tmp_num >= 1 :
         bits += 1
-        tmp_num = tmp_num / ( 10**bits)
+        tmp_num = tmp_num / 10 ##!! I do get it wrong ~~ be more careful 
     return bits 
 
 def generate_circular_numbers(num):

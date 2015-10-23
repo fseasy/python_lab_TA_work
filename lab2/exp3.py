@@ -83,7 +83,7 @@ if __name__ == "__main__" :
             day = 1
             passed_days = DayAndWeek.days_between2date_point(init_year , init_month , init_day , year_ite , month_ite , day )
             day_num = DayAndWeek.what_day_is_the_day(1 , passed_days)
-            if day_num == 1 :
+            if day_num == 7 :
                 date_satisfied.append((year_ite , month_ite , 1))
 
     print date_satisfied
