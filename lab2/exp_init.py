@@ -1,4 +1,8 @@
 #coding=utf-8
+##@brief : code for temperature translate between fahrenheit2centigrade 
+##! FOR AUTO Evaluation System , Should : 
+##~ 1. Remove the output for `raw_input`
+##~ 2. exit(0) as always !!!
 
 def fahrenheit2centigrade(fahrenheit_value) :
     return ( fahrenheit_value - 32. ) * 5 / 9 
