@@ -1,5 +1,5 @@
 #coding=utf-8
-##@brief how may days which satisfied the condition : day is 1 and week day is also 1 . answer is 172 in the question
+##@brief how may days which satisfied the condition : day is 1 and week day is 7 . answer is 171 in the question
 class DayAndWeek(object) :
     __31_days_months = (1,3,5,7,8,10,12)
     __30_days_months = (4,6,9,11)

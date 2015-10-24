@@ -1,5 +1,5 @@
 #coding=utf-8
-##@brief : get circular prime number . the question's answer is 10915
+##@brief : get circular prime number . the question's answer is 55
 import math
 from exp2 import generate_prime_number_normal
 
