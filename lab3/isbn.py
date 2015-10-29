@@ -5,6 +5,7 @@ This code is for Evaluation of ISBN with 10 bits only . it is redundant , but ma
 INVALID_FORMAT_TIPS = "Invalid ISBN Format"
 INVALID_TIPS = "Invalid ISBN"
 VALID_TIPS = "Valid ISBN"
+INPUT_END_SIGNAL = "$$$"
 
 def check_isbn_format(isbn_str) :
     if type(isbn_str) != str :
@@ -53,14 +54,22 @@ def verify_isbn_digits(isbn_digits) :
     return verify_sum % 11 == 0
 
 if __name__ == "__main__" :
-    input_str = raw_input()
-    check_format_status = check_isbn_format(input_str)
-    if check_format_status == False :
-        print INVALID_FORMAT_TIPS
-        exit(0) ## Exit with 0
-    digits = trans_isbn2digits(input_str)
-    verify_status = verify_isbn_digits(digits)
-    if verify_status :
-        print VALID_TIPS
-    else :
-        print INVALID_TIPS
+    # receive inputs until receiving `INPUT_END_SIGNAL`
+    while True :
+        try :
+            input_str = raw_input()
+        except EOFError :
+            break # ctrl-D , exit .
+        if input_str == INPUT_END_SIGNAL or input_str == '' : 
+            #! for condition `input_str == ''` , is to give a good experience 
+            break
+        check_format_status = check_isbn_format(input_str)
+        if check_format_status == False :
+            print INVALID_FORMAT_TIPS
+            continue
+        digits = trans_isbn2digits(input_str)
+        verify_status = verify_isbn_digits(digits)
+        if verify_status :
+            print VALID_TIPS
+        else :
+            print INVALID_TIPS
