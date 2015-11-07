@@ -31,11 +31,14 @@ BOOL ReadData(const HANDLE & hParentRead , char * data )
 }
 
 
-BOOL GetCodeRunResult(char *sample , char  data[])
+BOOL GetCodeRunResult(char * filePath , char *sample , char  data[])
 {
-    const int MAX_SIZE = 256 ;
-    TCHAR cmdName[MAX_SIZE] = L"" ;
-    TCHAR pyFilePath[MAX_SIZE] = {L"cmd /c python E:\\Users\\小文件\\Desktop\\tmp\\isbn.py"} ;
+    const int MAX_SIZE = 1024 ;
+    char exeCommands[MAX_SIZE] = "cmd /c python " ;
+    strcat(exeCommands , filePath) ;
+    TCHAR pyFilePath[MAX_SIZE] ;
+
+    swprintf(pyFilePath,L"%S", exeCommands);
 
     HANDLE hParentWrite , hChildRead ;
     HANDLE hParentRead , hChildWrite ;
@@ -163,13 +166,13 @@ int _tmain(int argc, _TCHAR* argv[])
         "格式不对的ISBN或校验不对的ISBN" 
     } ;
     cout << "\n===========ISBN本地测试===========\n" ;
-    cout << "请输入Python代码文件完整路径（可在文件浏览器中打开，然后拖动文件图标到该控制台界面）:\n"
-    
-    cin >> 
+    cout << "请输入Python代码文件完整路径（可在文件浏览器中打开，然后拖动文件图标到该控制台界面）:\n" ;
+    char filePath[1024] ;
+    cin >> filePath ;
     char data[1024] ;
     for(size_t i = 0 ; i < 2 ; ++i)
     {
-        GetCodeRunResult(samplesIn[i] , data) ;
+        GetCodeRunResult(filePath , samplesIn[i] , data) ;
         BOOL bEvalResult = EvalResult(data , samplesOut[i]) ;
         cout << "第" << i+1 << "个测试用例结果：" ;
         if(bEvalResult)
