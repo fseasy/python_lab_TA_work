@@ -1,7 +1,12 @@
 #coding=utf8
 
+import sys
+
 GradeIdx2Name = ( u'语文' , u'数学' , u'英语',u'物理' , u'化学' , u'总成绩' , '平均分')
 GradeName2Idx = { name:idx for idx , name in enumerate(GradeIdx2Name) }
+
+INPUT_SPLIT = u'======'
+OUTPUT_SPLIT = u'******'
 
 class stage :
     STAGE_READ_DATA = 1
@@ -58,8 +63,8 @@ def bubble_sort(data , cmp_func=cmp , reverse=False) :
     sorted_data = data[:]
     for ite_nums in range( len(sorted_data) -1 ) :
         for swap_idx in range( 0 , len(sorted_data) -1 - ite_nums) :
-            if inner_cmp_func(data[swap_idx] , data[swap_idx+1]) > 0 :
-                data[swap_idx] , data[swap_idx+1] = data[swap_idx+1] , data[swap_idx]
+            if inner_cmp_func(sorted_data[swap_idx] , sorted_data[swap_idx+1]) > 0 :
+                sorted_data[swap_idx] , sorted_data[swap_idx+1] = sorted_data[swap_idx+1] , sorted_data[swap_idx]
     return sorted_data
 
 def generage_cmp_func(sorted_name) :
@@ -76,9 +81,11 @@ def generage_cmp_func(sorted_name) :
         if grades1[grade_idx] != grades2[grade_idx] :
             return cmp(grades1[grade_idx] , grades2[grade_idx])
         else :
-            for idx in range(0 , valid_end + 1) :
-                if idx == grade_idx :
-                    continue
+            # then ordered by u'总成绩'
+            if grades1[valid_end] != grades2[valid_end] :
+                return cmp(grades1[valid_end] , grades2[valid_end])
+            # else ordered by score order -> u'语文' u'数学' u'外语' u'物理' u'化学'
+            for idx in range(0 , valid_end) :
                 if grades1[idx] != grades2[idx] :
                     return cmp(grades1[idx] , grades2[idx])
                 else :
@@ -87,15 +94,15 @@ def generage_cmp_func(sorted_name) :
     return cmp_func
 
 def set_rank_value(data) :
-    sorted_data = select_sort(data.items() , generage_cmp_func(u'总成绩'))
+    sorted_data = select_sort(data.items() , generage_cmp_func(u'总成绩') , True)
     rank = 1
     for key , value in sorted_data  :
         data[key]['rank'] = rank
         rank += 1
 
 def print_all_grades_sorted(data , console_encoding='utf8') :
-    sorted_data = select_sort(data.items() , generage_cmp_func(u'总成绩'))
-    formated_line = u"{rank} {ID} {name} {grade[0]} {grade[1]} {grade[2]} {grade[3]} {grade[4]} {grade[5]} {grade[6]:.1}"
+    sorted_data = select_sort(data.items() , generage_cmp_func(u'总成绩') , True)
+    formated_line = u"{rank} {ID} {name} {grade[0]} {grade[1]} {grade[2]} {grade[3]} {grade[4]} {grade[5]} {grade[6]:.1f}"
     for key , value in sorted_data :
         ID = key 
         name = value['name']
@@ -103,15 +110,15 @@ def print_all_grades_sorted(data , console_encoding='utf8') :
         grade = value['grades']
         print formated_line.format(**locals()).encode(console_encoding)
 
-def print_single_grades_sorted(data , subject , console_encoding='utf8') :
-    sorted_data = bubble_sort(data.items() , generage_cmp_func(subject))
+def print_single_grades_sorted(data , subject , console_encoding='utf8' ) :
+    sorted_data = bubble_sort(data.items() , generage_cmp_func(subject) , True)
     formated_line = u'{rank} {ID} {name} {score}'
     rank = 1
     for key , value in sorted_data :
         ID = key 
         name = value['name']
         score = value['grades'][GradeName2Idx[subject]]
-        print formated_line.format(**locals()).encoding(console_encoding)
+        print formated_line.format(**locals()).encode(console_encoding)
         rank += 1
 
 def binary_search(data , ID) :
@@ -123,9 +130,9 @@ def binary_search(data , ID) :
     high = len(items) -1 
     while(low <= high) :
         mid = low + ( high - low ) / 2 
-        if data[mid][0] == search_id : 
-            return data[mid][1]
-        elif data[mid][0] < search_id : 
+        if items[mid][0] == search_id : 
+            return items[mid][1]
+        elif items[mid][0] < search_id : 
             low = mid + 1
         else : 
             high = mid - 1
@@ -141,18 +148,21 @@ if __name__ == '__main__' :
         try :
             line = line.decode(console_encoding)
         except UnicodeDecodeError , e :
-            another_encoding = str(ist(candidate_encoding - set([console_encoding]))[0])
+            another_encoding = str(list(candidate_encoding - set([console_encoding]))[0])
             line = line.decode(another_encoding ) # if Exception again , do not processing it ~ 
             console_encoding = another_encoding
-        if line == u"======" :
+        if line == INPUT_SPLIT :
             if cur_stage == stage.STAGE_READ_DATA :
                 cur_stage = stage.STAGE_SINGLE_RANK
                 # set rank , print sorted result .
                 set_rank_value(grades_data)
                 print_all_grades_sorted(grades_data , console_encoding)
+                print OUTPUT_SPLIT.encode(console_encoding)
             elif cur_stage == stage.STAGE_SINGLE_RANK :
                 cur_stage = stage.STAGE_SEARCH_ID
+                print OUTPUT_SPLIT.encode(console_encoding)
             else :
+                print OUTPUT_SPLIT.encode(console_encoding)
                 break
             continue
         
@@ -163,5 +173,9 @@ if __name__ == '__main__' :
             print_single_grades_sorted(grades_data , subject , console_encoding)
         else :
             search_id_line = line
-            binary_search(data , search_id_line)
-            formated_line = u"{search_id_line} {name} {grade[0]} {grade[1]} {grade[2]} {grade[3]} {grade[4]} {grade[5]} {grade[6]:.1} {rank}"
+            info = binary_search(grades_data , search_id_line)
+            name = info['name']
+            grade = info['grades']
+            rank = info['rank']
+            formated_line = u"{search_id_line} {name} {grade[0]} {grade[1]} {grade[2]} {grade[3]} {grade[4]} {grade[5]} {grade[6]:.1f} {rank}"
+            print formated_line.format(**locals()).encode(console_encoding)
